@@ -13,7 +13,8 @@ You can go through all the steps below to get the screen working. Games.py is op
 To use openvpn name your own custom .ovpn file SecureConnection.ovpn and place it into /root then type sudo ./setup_auto_openvpn_Version2.sh this with auto launch the vpn after internet connection.
 # True intentions with the screen
 The games need some work I'm not a game software developer. Plus this is a screen functioning on kali linux a very well known pentesting operating system. If you want to fix the Games.py scripts or upgrade them please do so. But the real goal is to have people develop the screen for pentesting. When logging in you will be able to see the various kali-tools- to download.
-
+# Either Download the image I tested my notes on or download from Armbian here
+https://dl.armbian.com/radxa-zero3/Sid_vendor_server-kali setup instructions are at https://dl.armbian.com/radxa-zero3
 # Screen setup steps copy and paste into CLI after ssh
 ```armbian-upgrade;
 sudo apt-get install python3-evdev python3-spidev python3-pillow python3-luma.lcd python3-pip;
