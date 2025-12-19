@@ -1,32 +1,23 @@
 # radxa-zero3-waveshare-lcd
 Setup and scripts for using Waveshare 1.3-inch LCD and GPIO buttons on Radxa Zero 3 running Armbian Kali Linux
 You can go through all the steps below to get the screen working Games.py is optional but it can be used as a reference as to how the scripts should be written. I suggest using ssh to make copy and paste easier as its around 900 lines of text. I have include an image which is a gzipped dd of the 16GB MicroSD I tested my notes. Defualt passwods are root/toor and kali/kali. Everything done in the text is done on this image. Except the image comes with an openvpn installer available at /root to possibley make ssh easier as it can be set up to have a static IP ssh avoiding DHCP. To connect to wifi
-    nmcli dev wifi list
+    'nmcli dev wifi list'
 then connect to it with 
-    sudo nmcli dev wifi connect "SSID" password "PASSWORD"
+    'sudo nmcli dev wifi connect "SSID" password "PASSWORD"'
 make it an autoconnection with first showing connections
-    nmcli con show
+    'nmcli con show'
 then activate it with
-    nmcli connection modify "connection-name" connection.autoconnect yes
+    'nmcli connection modify "connection-name" connection.autoconnect yes'
 To use openvpn name your own custom .ovpn file SecureConnection.ovpn and place it into /root then type sudo ./setup_auto_openvpn_Version2.sh this with auto launch the vpn after internet connection.
 The games need some work I'm not a game software developer. Plus this is a screen functioning on kali linux a very well known pentesting operating system. If you want to fix the Games.py scripts or upgrade them please do so. But the real goal is to have people develop the screen for pentesting. When logging in you will be able to see the various kali-tools- to download.
 
 # Screen setup steps copy and paste into CLI after ssh
-   armbian-upgrade
-   sudo apt-get install python3-evdev python3-spidev python3-pillow python3-luma.lcd python3-pip
-   sudo apt install libgpiod-dev linux-source
-   python3 -m pip install --upgrade pip setuptools wheel --break-system-packages
-   python3 -m pip install gpiod --break-system-packages
-   cd /usr/src
-   ls -l linux-source-*.tar.xz
-   sudo tar -xf linux-source-*.tar.xz
+   armbian-upgrade; sudo apt-get install python3-evdev python3-spidev python3-pillow python3-luma.lcd python3-pip; sudo apt install libgpiod-dev linux-source; python3 -m pip install --upgrade pip setuptools wheel --break-system-packages; python3 -m pip install gpiod --break-system-packages; cd /usr/src; ls -l linux-source-*.tar.xz; sudo tar -xf linux-source-*.tar.xz
    # mine is "/usr/src/linux-source-6.17" you will need this later for compiling
-   sudo mkdir -p /boot/overlay-user
-   cd /boot/overlay-user
-   sudo nano waveshare_lcd_buttons.dts
+   sudo mkdir -p /boot/overlay-user; cd /boot/overlay-user; sudo nano waveshare_lcd_buttons.dts
 # this is the overlay for just the buttons
-# copy and paste text below   
-/dts-v1/;
+# copy and paste text below delete ``` and ```  
+```/dts-v1/;
 /plugin/;
 
 #include <dt-bindings/gpio/gpio.h>
@@ -65,17 +56,16 @@ The games need some work I'm not a game software developer. Plus this is a scree
                 <3 RK_PC3 RK_FUNC_GPIO &pcfg_pull_up>;
         };
     };
-};
+};```
 # end copy at the line above
 # ctrl x then press y to save
 # for the next step we are compiling the overlay and storing it in tmp before processesing it the linux source kernel is needed from earlier. Replace 6.17 if needed.   
-   cpp -nostdinc -undef -x assembler-with-cpp -E -I /usr/src/linux-source-6.17/include -I /usr/src/linux-source-6.17/arch/arm64/boot/dts -I /usr/src/linux-source-6.17/arch/arm64/boot/dts/rockchip -I . waveshare_lcd_buttons.dts > /tmp/waveshare_lcd_buttons.pp 2> /tmp/cpp.err
-   dtc -I dts -O dtb -@ -b 0 -o waveshare_lcd_buttons.dtbo /tmp/waveshare_lcd_buttons.pp 2> /tmp/dtc.err
-   sudo mkdir /GUI
+   cpp -nostdinc -undef -x assembler-with-cpp -E -I /usr/src/linux-source-6.17/include -I /usr/src/linux-source-6.17/arch/arm64/boot/dts -I /usr/src/linux-source-6.17/arch/arm64/boot/dts/rockchip -I . waveshare_lcd_buttons.dts > /tmp/waveshare_lcd_buttons.pp 2> /tmp/cpp.err; dtc -I dts -O dtb -@ -b 0 - waveshare_lcd_buttons.dtbo /tmp/waveshare_lcd_buttons.pp 2> /tmp/dtc.err; sudo mkdir /GUI
 # This was fun to figure out, it took hours. Unlike other overlays that run both the screen driver and the buttons. This overlay will work the buttons with another overlay opening /dev/spidev3.0 for it to function and a custom Python script will work the screen this custom Python script will take the place of the st7789 driver and be callled upon by other python3 GUI scripts.
    sudo nano /GUI/st7789_userland.py
+
 # copy and paste text below
-#!/usr/bin/env python3
+```#!/usr/bin/env python3
 import time
 import glob
 import spidev
@@ -312,12 +302,12 @@ if __name__ == "__main__":
         disp.display(img)
         print("ST7789 userspace test complete.")
     finally:
-        disp.close()
+        disp.close()```
 # end copy at the line above
 # ctrl x then press y to save
     sudo nano /GUI/Games.py
 # copy and paste text below    
-#!/usr/bin/env python3
+```#!/usr/bin/env python3
 #Simple ST7789 Games GUI
 #- Shows a System Status screen on startup
 #- On any button press, shows a Games menu (Snake, Tetris, Paddle)
@@ -941,13 +931,13 @@ def main():
             pass
 
 if __name__ == "__main__":
-    main()
+    main()```
 # end copy at the line above
 # ctrl x then press y to save
     sudo nano /boot/armbianEnv.txt
 # this is what it should look like when you are done we need to add the lines overlays=rk3568-spi3-m1-cs0-spidev to make spidev3.0 accessible for the screen and we need to add user_overlays=waveshare_lcd_buttons to make the buttons register.If you want to add a usb hub or splitter add net.ifnames=0 after extraags=cma=256M it will make the devices on the apdapter show up more consistently such as wifi adapters appearing as wlan1 instead of wlx<mac>. Your usbstoragequirks= may be different and so may your rootdev=UUID= after editing the armbianEnv.txt a reboot is required for changes to take effect.
 
-verbosity=1
+```verbosity=1
 bootlogo=false
 console=both
 extraargs=cma=256M net.ifnames=0
@@ -957,13 +947,12 @@ overlays=rk3568-spi3-m1-cs0-spidev
 user_overlays=waveshare_lcd_buttons
 rootdev=UUID=adaf38e1-1649-4752-8b38-cc8f379911bc
 rootfstype=ext4
-usbstoragequirks=0x2537:0x1066:u,0x2537:0x1068:u
+usbstoragequirks=0x2537:0x1066:u,0x2537:0x1068:u```
     
-    sudo reboot
-    sudo nano /etc/systemd/system/GUI.service
+    sudo reboot; sudo nano /etc/systemd/system/GUI.service
 # This registers the service to start at boot and play the simple games just mind you I'm not a game software developer and this is a screen functioning on kali linux a very well known pentesting operating system. So keep that in mind when playing these simple games if you want to fix the Games.py scripts or upgrade them please do so.
 # copy and paste text below
-[Unit]
+```[Unit]
 Description=Radxa ST7789 status & menu
 After=network-online.target
 Wants=network-online.target
@@ -980,7 +969,7 @@ RestartSec=2
 Environment=PYTHONUNBUFFERED=1
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=multi-user.target```
 # end copy at the line above 
 # crtl x then press y then enter to save
     sudo systemctl start GUI
