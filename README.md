@@ -947,8 +947,7 @@ if __name__ == "__main__":
 ```
 # ctrl x then press y to save
     sudo nano /boot/armbianEnv.txt
-# this is what it should look like when you are done we need to add the lines overlays=rk3568-spi3-m1-cs0-spidev to make spidev3.0 accessible for the screen and we need to add user_overlays=waveshare_lcd_buttons to make the buttons register.If you want to add a usb hub or splitter add net.ifnames=0 after extraags=cma=256M it will make the devices on the apdapter show up more consistently such as wifi adapters appearing as wlan1 instead of wlx<mac>. Your usbstoragequirks= may be different and so may your rootdev=UUID= after editing the armbianEnv.txt a reboot is required for changes to take effect.
-
+# Reference
 ```verbosity=1
 bootlogo=false
 console=both
@@ -961,6 +960,15 @@ rootdev=UUID=adaf38e1-1649-4752-8b38-cc8f379911bc
 rootfstype=ext4
 usbstoragequirks=0x2537:0x1066:u,0x2537:0x1068:u
 ```
+# Notes 
+Add the lines overlays=rk3568-spi3-m1-cs0-spidev 
+# This makes spidev3.0 accessible for the screen 
+Add user_overlays=waveshare_lcd_buttons
+# This makes the buttons register.
+Add net.ifnames=0 after extraags=cma=256M
+# If you want to add a usb hub or splitter it will make the devices on the apdapter show up more consistently
+# Helpful tips 
+Add them in the order listed above. Your usbstoragequirks= may be different and so may your rootdev=UUID=. After editing the armbianEnv.txt a reboot is required for changes to take effect.
 # Reboot    
 sudo reboot
 # Login 
