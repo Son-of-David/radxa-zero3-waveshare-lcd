@@ -13,10 +13,10 @@ The games need some work I'm not a game software developer. Plus this is a scree
 
 # Screen setup steps copy and paste into CLI after ssh
    armbian-upgrade; sudo apt-get install python3-evdev python3-spidev python3-pillow python3-luma.lcd python3-pip; sudo apt install libgpiod-dev linux-source; python3 -m pip install --upgrade pip setuptools wheel --break-system-packages; python3 -m pip install gpiod --break-system-packages; cd /usr/src; ls -l linux-source-*.tar.xz; sudo tar -xf linux-source-*.tar.xz
-   # mine is "/usr/src/linux-source-6.17" you will need this later for compiling
+# Mine is "/usr/src/linux-source-6.17" you will need this later for compiling
    sudo mkdir -p /boot/overlay-user; cd /boot/overlay-user; sudo nano waveshare_lcd_buttons.dts
-# this is the overlay for just the buttons
-# copy and paste text below delete ``` and ```  
+# This is the overlay for just the buttons
+# copy and paste text below delete   
 ```/dts-v1/;
 /plugin/;
 
@@ -56,15 +56,13 @@ The games need some work I'm not a game software developer. Plus this is a scree
                 <3 RK_PC3 RK_FUNC_GPIO &pcfg_pull_up>;
         };
     };
-};```
-# end copy at the line above
-# ctrl x then press y to save
-# for the next step we are compiling the overlay and storing it in tmp before processesing it the linux source kernel is needed from earlier. Replace 6.17 if needed.   
+};
+```
+# Ctrl x then press y to save
+# For the next step we are compiling the overlay and storing it in tmp before processesing it the linux source kernel is needed from earlier. Replace 6.17 if needed.   
    cpp -nostdinc -undef -x assembler-with-cpp -E -I /usr/src/linux-source-6.17/include -I /usr/src/linux-source-6.17/arch/arm64/boot/dts -I /usr/src/linux-source-6.17/arch/arm64/boot/dts/rockchip -I . waveshare_lcd_buttons.dts > /tmp/waveshare_lcd_buttons.pp 2> /tmp/cpp.err; dtc -I dts -O dtb -@ -b 0 - waveshare_lcd_buttons.dtbo /tmp/waveshare_lcd_buttons.pp 2> /tmp/dtc.err; sudo mkdir /GUI
 # This was fun to figure out, it took hours. Unlike other overlays that run both the screen driver and the buttons. This overlay will work the buttons with another overlay opening /dev/spidev3.0 for it to function and a custom Python script will work the screen this custom Python script will take the place of the st7789 driver and be callled upon by other python3 GUI scripts.
    sudo nano /GUI/st7789_userland.py
-
-# copy and paste text below
 ```#!/usr/bin/env python3
 import time
 import glob
@@ -302,8 +300,8 @@ if __name__ == "__main__":
         disp.display(img)
         print("ST7789 userspace test complete.")
     finally:
-        disp.close()```
-# end copy at the line above
+        disp.close()
+```
 # ctrl x then press y to save
     sudo nano /GUI/Games.py
 # copy and paste text below    
@@ -313,9 +311,6 @@ if __name__ == "__main__":
 #- On any button press, shows a Games menu (Snake, Tetris, Paddle)
 #- Controls (menu): UP/DOWN to move, F2 to select, ENTER to return to Status
 #- Controls (games): See footer on each game screen
-#
-#This script is based on the structure and device handling patterns in kismet_web_interface.py
-#but contains no web or Kismet features — it targets the ST7789 display only.
 
 import sys
 import time
@@ -931,8 +926,8 @@ def main():
             pass
 
 if __name__ == "__main__":
-    main()```
-# end copy at the line above
+    main()
+```
 # ctrl x then press y to save
     sudo nano /boot/armbianEnv.txt
 # this is what it should look like when you are done we need to add the lines overlays=rk3568-spi3-m1-cs0-spidev to make spidev3.0 accessible for the screen and we need to add user_overlays=waveshare_lcd_buttons to make the buttons register.If you want to add a usb hub or splitter add net.ifnames=0 after extraags=cma=256M it will make the devices on the apdapter show up more consistently such as wifi adapters appearing as wlan1 instead of wlx<mac>. Your usbstoragequirks= may be different and so may your rootdev=UUID= after editing the armbianEnv.txt a reboot is required for changes to take effect.
@@ -947,7 +942,8 @@ overlays=rk3568-spi3-m1-cs0-spidev
 user_overlays=waveshare_lcd_buttons
 rootdev=UUID=adaf38e1-1649-4752-8b38-cc8f379911bc
 rootfstype=ext4
-usbstoragequirks=0x2537:0x1066:u,0x2537:0x1068:u```
+usbstoragequirks=0x2537:0x1066:u,0x2537:0x1068:u
+```
     
     sudo reboot; sudo nano /etc/systemd/system/GUI.service
 # This registers the service to start at boot and play the simple games just mind you I'm not a game software developer and this is a screen functioning on kali linux a very well known pentesting operating system. So keep that in mind when playing these simple games if you want to fix the Games.py scripts or upgrade them please do so.
@@ -969,8 +965,8 @@ RestartSec=2
 Environment=PYTHONUNBUFFERED=1
 
 [Install]
-WantedBy=multi-user.target```
-# end copy at the line above 
+WantedBy=multi-user.target
+```
 # crtl x then press y then enter to save
     sudo systemctl start GUI
 # After this command the screen should turn on 
