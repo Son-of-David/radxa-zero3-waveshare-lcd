@@ -5,7 +5,8 @@ You can go through all the steps below to get the screen working. Games.py is op
 I have included an image which is a gzipped dd of the 16GB MicroSD which I tested my notes on at https://torchurch.us link for direct download is https://torchurch.us/Armbian_Kali_RadxaZero3_WaveshareLCD1.3_Lite.img.gz  Defualt username/passwods are root/toor and kali/kali. Everything done in the text below is done on this image. Except the image comes with an openvpn installer available at /root to possibley make ssh easier as it can be set up to have a static IP ssh avoiding DHCP. 
 # Expand File System
 this happens automatically on the stock armbian image but since Ive made alterations to it it should be expanded if you are using a card larger then 16GB
-```sudo systemctl enable armbian-resize-filesystem;
+```
+sudo systemctl enable armbian-resize-filesystem;
 sudo reboot
 ```
 after reboot your file system will use the entire SD card
@@ -24,7 +25,8 @@ The games need some work I'm not a game software developer. Plus this is a scree
 # Either Download the image I tested my notes on or download from Armbian here
 https://dl.armbian.com/radxa-zero3/Sid_vendor_server-kali setup instructions are at https://dl.armbian.com/radxa-zero3
 # Screen setup steps copy and paste into CLI after ssh
-```armbian-upgrade;
+```
+armbian-upgrade;
 sudo apt-get install python3-evdev python3-spidev python3-pillow python3-luma.lcd python3-pip;
 sudo apt install libgpiod-dev linux-source;
 python3 -m pip install --upgrade pip setuptools wheel --break-system-packages;
@@ -34,12 +36,14 @@ ls -l linux-source-*.tar.xz;
 sudo tar -xf linux-source-*.tar.xz
 ```
 # Mine is "/usr/src/linux-source-6.17" you will need this later for compiling
-```sudo mkdir -p /boot/overlay-user;
+```
+sudo mkdir -p /boot/overlay-user;
 cd /boot/overlay-user;
 sudo nano waveshare_lcd_buttons.dts
 ```
 # This is the overlay for just the buttons 
-```/dts-v1/;
+```
+/dts-v1/;
 /plugin/;
 
 #include <dt-bindings/gpio/gpio.h>
@@ -82,13 +86,15 @@ sudo nano waveshare_lcd_buttons.dts
 ```
 # Ctrl x then press y to save
 # For the next step we are compiling the overlay and storing it in tmp before processesing it the linux source kernel is needed from earlier. Replace 6.17 if needed.   
-```cpp -nostdinc -undef -x assembler-with-cpp -E -I /usr/src/linux-source-6.17/include -I /usr/src/linux-source-6.17/arch/arm64/boot/dts -I /usr/src/linux-source-6.17/arch/arm64/boot/dts/rockchip -I . waveshare_lcd_buttons.dts > /tmp/waveshare_lcd_buttons.pp 2> /tmp/cpp.err;
+```
+cpp -nostdinc -undef -x assembler-with-cpp -E -I /usr/src/linux-source-6.17/include -I /usr/src/linux-source-6.17/arch/arm64/boot/dts -I /usr/src/linux-source-6.17/arch/arm64/boot/dts/rockchip -I . waveshare_lcd_buttons.dts > /tmp/waveshare_lcd_buttons.pp 2> /tmp/cpp.err;
 dtc -I dts -O dtb -@ -b 0 - waveshare_lcd_buttons.dtbo /tmp/waveshare_lcd_buttons.pp 2> /tmp/dtc.err;
 sudo mkdir /GUI
 ```
 # This was fun to figure out, it took hours. Unlike other overlays that run both the screen driver and the buttons. This overlay will work the buttons with another overlay opening /dev/spidev3.0 for it to function and a custom Python script will work the screen this custom Python script will take the place of the st7789 driver and be callled upon by other python3 GUI scripts.
 sudo nano /GUI/st7789_userland.py
-```#!/usr/bin/env python3
+```
+#!/usr/bin/env python3
 import time
 import glob
 import spidev
@@ -330,7 +336,8 @@ if __name__ == "__main__":
 # ctrl x then press y to save
     sudo nano /GUI/Games.py
 # copy and paste text below    
-```#!/usr/bin/env python3
+```
+#!/usr/bin/env python3
 #Simple ST7789 Games GUI
 #- Shows a System Status screen on startup
 #- On any button press, shows a Games menu (Snake, Tetris, Paddle)
@@ -956,7 +963,8 @@ if __name__ == "__main__":
 # ctrl x then press y to save
     sudo nano /boot/armbianEnv.txt
 # Reference
-```verbosity=1
+```
+verbosity=1
 bootlogo=false
 console=both
 extraargs=cma=256M net.ifnames=0
@@ -982,7 +990,8 @@ sudo reboot
 # Login 
 sudo nano /etc/systemd/system/GUI.service
 # This registers the service to start at boot and play the simple games just mind you I'm not a game software developer and this is a screen functioning on kali linux a very well known pentesting operating system. So keep that in mind when playing these simple games if you want to fix the Games.py scripts or upgrade them please do so.
-```[Unit]
+```
+[Unit]
 Description=Radxa ST7789 status & menu
 After=network-online.target
 Wants=network-online.target
