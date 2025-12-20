@@ -3,6 +3,12 @@ Setup and scripts for using Waveshare 1.3-inch LCD and GPIO buttons on Radxa Zer
 You can go through all the steps below to get the screen working. Games.py is optional but it can be used as a reference as to how the scripts should be written. I suggest using ssh to make copy and paste easier as its around 900 lines of text. 
 # My website link to Download 
 I have included an image which is a gzipped dd of the 16GB MicroSD which I tested my notes on at https://torchurch.us link for direct download is https://torchurch.us/Armbian_Kali_RadxaZero3_WaveshareLCD1.3_Lite.img.gz  Defualt username/passwods are root/toor and kali/kali. Everything done in the text below is done on this image. Except the image comes with an openvpn installer available at /root to possibley make ssh easier as it can be set up to have a static IP ssh avoiding DHCP. 
+# Expand File System
+this happens automatically on the stock armbian image but since Ive made alterations to it it should be expanded if you are using a card larger then 16GB
+```sudo systemctl enable armbian-resize-filesystem;
+sudo reboot
+```
+after reboot your file system will use the entire SD card
 # To connect to wifi
     nmcli dev wifi list
 # Then connect to it with 
