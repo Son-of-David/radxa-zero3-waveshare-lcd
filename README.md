@@ -989,7 +989,7 @@ Add them in the order listed above. Your usbstoragequirks= may be different and 
 sudo reboot
 # Login 
 sudo nano /etc/systemd/system/GUI.service
-# This registers the service to start at boot and play the simple games just mind you I'm not a game software developer and this is a screen functioning on kali linux a very well known pentesting operating system. So keep that in mind when playing these simple games if you want to fix the Games.py scripts or upgrade them please do so.
+# This registers the service to start at boot and play the simple games just mind you I'm not a game software developer and this is a screen functioning on kali linux, a very well known pentesting operating system. So please keep that in mind when playing these simple games. If you want to fix the Games.py scripts or upgrade them please do so.
 ```
 [Unit]
 Description=Radxa ST7789 status & menu
