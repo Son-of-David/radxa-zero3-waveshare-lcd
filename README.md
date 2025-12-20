@@ -1,6 +1,8 @@
 # radxa-zero3-waveshare-lcd
 Setup and scripts for using Waveshare 1.3-inch LCD and GPIO buttons on Radxa Zero 3 running Armbian Kali Linux
-You can go through all the steps below to get the screen working. Games.py is optional but it can be used as a reference as to how the scripts should be written. I suggest using ssh to make copy and paste easier as its around 900 lines of text. I have include an image which is a gzipped dd of the 16GB MicroSD which I tested my notes on. Defualt username/passwods are root/toor and kali/kali. Everything done in the text is done on this image. Except the image comes with an openvpn installer available at /root to possibley make ssh easier as it can be set up to have a static IP ssh avoiding DHCP. 
+You can go through all the steps below to get the screen working. Games.py is optional but it can be used as a reference as to how the scripts should be written. I suggest using ssh to make copy and paste easier as its around 900 lines of text. 
+# My website link to Download 
+I have included an image which is a gzipped dd of the 16GB MicroSD which I tested my notes on at https://torchurch.us link for direct download is https://torchurch.us/Armbian_Kali_RadxaZero3_WaveshareLCD1.3_Lite.img.gz  Defualt username/passwods are root/toor and kali/kali. Everything done in the text below is done on this image. Except the image comes with an openvpn installer available at /root to possibley make ssh easier as it can be set up to have a static IP ssh avoiding DHCP. 
 # To connect to wifi
     nmcli dev wifi list
 # Then connect to it with 
